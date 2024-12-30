@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学数学练习</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="fireworks"></canvas>
+    <div class="app-container">
+        <header class="header">
+            <h1>趣味数学练习</h1>
+            <p class="subtitle">让学习变得更有趣！</p>
+        </header>
+
+        <main class="main-content">
+            <div class="controls-panel">
+                <div class="select-wrapper">
+                    <label for="difficulty">选择难度：</label>
+                    <select id="difficulty">
+                        <option value="10">十以内运算</option>
+                        <option value="20">二十以内运算</option>
+                    </select>
+                </div>
+                <button class="primary-btn" onclick="generateProblems()">
+                    <span class="icon">📝</span>生成新题目
+                </button>
+                <button class="primary-btn" onclick="window.print()">
+                    <span class="icon">📄</span>导出PDF
+                </button>
+            </div>
+
+            <div id="problems" class="problems-container"></div>
+
+            <div class="action-panel">
+                <button class="submit-btn" onclick="checkAnswers()" id="checkButton">
+                    <span class="icon">✓</span>提交答案
+                </button>
+            </div>
+
+            <div id="result" class="result-panel"></div>
+        </main>
+
+        <footer class="footer">
+            <p>快乐学习 • 轻松进步</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
