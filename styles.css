@@ -476,3 +476,18 @@ select:hover {
         display: none !important;
     }
 }
+
+.copyright {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 8px;
+}
+
+.copyright a {
+    color: #666;
+    text-decoration: none;
+}
+
+.copyright a:hover {
+    text-decoration: underline;
+}
