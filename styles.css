@@ -108,20 +108,26 @@ select:hover {
 
 .problems-container {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+    padding: 0px;
     margin: 0 auto;
     max-width: 1400px;
 }
 
 .problem {
+    position: relative;
     background: white;
-    padding: 15px;
+    padding: 20px 25px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
     border: 2px solid #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 280px;
+    min-height: 100px;
 }
 
 .problem:hover {
@@ -132,12 +138,13 @@ select:hover {
 
 .problem-wrapper {
     position: relative;
+    width: 100%;
 }
 
 .problem-number {
     position: absolute;
-    top: -10px;
-    left: -10px;
+    top: -25px;
+    left: -25px;
     background: var(--primary-color);
     color: white;
     width: 24px;
@@ -149,31 +156,39 @@ select:hover {
     font-size: 14px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1;
 }
 
 .calculation {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 12px;
     font-size: 22px;
     white-space: nowrap;
-    padding: 10px;
+    width: 100%;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+}
+
+.calculation-expression {
+    text-align: right;
+    justify-self: end;
+}
+
+.calculation-equals {
+    justify-self: center;
 }
 
 .answer-input {
-    width: 60px;
-    height: 40px;
+    width: 65px;
+    height: 45px;
     padding: 5px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
-    font-size: 20px;
+    font-size: 22px;
     text-align: center;
-    transition: all 0.3s ease;
-    background-color: #f8f9fa;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
-    appearance: none;
+    justify-self: start;
 }
 
 .answer-input::-webkit-outer-spin-button,
@@ -374,7 +389,7 @@ select:hover {
     .problems-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        gap: 30px;
         padding: 20px;
         page-break-inside: avoid;
     }
@@ -385,27 +400,51 @@ select:hover {
         background: none;
         border: 1px solid #ccc;
         box-shadow: none;
-        padding: 15px;
+        padding: 20px;
+        min-height: 80px;
+        width: 100%;
     }
 
-    .problem-number {
-        border: 1px solid #999;
-        background: none;
-        color: #666;
-        box-shadow: none;
+    .problem {
+        position: relative;  /* 确保子元素的绝对定位相对于此元素 */
+        background: white;
+        padding: 20px 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 2px solid #e8eaf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 240px;
+        min-height: 100px;
     }
 
     .calculation {
-        font-size: 20px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 8px;
+        font-size: 18px;
+        min-width: 180px;
+        white-space: nowrap;
     }
 
-    /* 答案输入框样式 */
+    .calculation-expression {
+        text-align: right;
+        justify-self: end;
+    }
+
+    .calculation-equals {
+        justify-self: center;
+    }
+
     .answer-input {
-        width: 70px;
-        height: 40px;
+        width: 50px;
+        height: 30px;
         border: 1px solid #999;
-        background: none;
-        box-shadow: none;
+        justify-self: start;
+        text-align: center;
     }
 
     /* A4纸张设置 */
@@ -518,5 +557,23 @@ select:hover {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+
+.switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 15px;
+}
+
+.switch-wrapper input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.switch-label {
+    font-size: 14px;
+    color: #666;
 }
 

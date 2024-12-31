@@ -8,43 +8,86 @@ function generateProblems() {
     }
     
     const difficulty = parseInt(document.getElementById('difficulty').value);
+    const useThreeNumbers = document.getElementById('threeNumbers').checked;
     const range = difficulty;
     problems = [];
     
     // 生成20道题
     for (let i = 0; i < 20; i++) {
-        let num1, num2, operator, answer;
-        const isAddition = Math.random() < 0.5;
-        
-        if (isAddition) {
-            // 加法：确保结果不超过范围
-            do {
-                num1 = Math.floor(Math.random() * range) + 1;
-                num2 = Math.floor(Math.random() * range) + 1;
-                answer = num1 + num2;
-            } while (answer > range);
+        if (useThreeNumbers && Math.random() < 0.5) {
+            // 生成三数运算题
+            let num1, num2, num3, operator1, operator2, answer, intermediateResult;
             
-            operator = '+';
-        } else {
-            // 减法：确保结果为正且所有数都在范围内
             do {
                 num1 = Math.floor(Math.random() * range) + 1;
                 num2 = Math.floor(Math.random() * range) + 1;
-                if (num1 < num2) {
-                    [num1, num2] = [num2, num1]; // 交换，确保大数在前
+                num3 = Math.floor(Math.random() * range) + 1;
+                
+                operator1 = Math.random() < 0.5 ? '+' : '-';
+                operator2 = Math.random() < 0.5 ? '+' : '-';
+                
+                // 计算中间结果和最终结果
+                if (operator1 === '+') {
+                    intermediateResult = num1 + num2;
+                    answer = operator2 === '+' ? intermediateResult + num3 : intermediateResult - num3;
+                } else {
+                    intermediateResult = num1 - num2;
+                    answer = operator2 === '+' ? intermediateResult + num3 : intermediateResult - num3;
                 }
-                answer = num1 - num2;
-            } while (answer > range || answer === 0);
+                
+                // 确保中间结果和最终结果都在有效范围内
+            } while (
+                intermediateResult > range || 
+                intermediateResult <= 0 || 
+                answer > range || 
+                answer <= 0
+            );
             
-            operator = '-';
+            problems.push({
+                num1: num1,
+                num2: num2,
+                num3: num3,
+                operator1: operator1,
+                operator2: operator2,
+                answer: answer,
+                isThreeNumbers: true
+            });
+        } else {
+            // 原有的两数运算逻辑
+            let num1, num2, operator, answer;
+            const isAddition = Math.random() < 0.5;
+            
+            if (isAddition) {
+                // 加法：确保结果不超过范围
+                do {
+                    num1 = Math.floor(Math.random() * range) + 1;
+                    num2 = Math.floor(Math.random() * range) + 1;
+                    answer = num1 + num2;
+                } while (answer > range);
+                
+                operator = '+';
+            } else {
+                // 减法：确保结果为正且所有数都在范围内
+                do {
+                    num1 = Math.floor(Math.random() * range) + 1;
+                    num2 = Math.floor(Math.random() * range) + 1;
+                    if (num1 < num2) {
+                        [num1, num2] = [num2, num1]; // 交换，确保大数在前
+                    }
+                    answer = num1 - num2;
+                } while (answer > range || answer === 0);
+                
+                operator = '-';
+            }
+            
+            problems.push({
+                num1: num1,
+                num2: num2,
+                operator: operator,
+                answer: answer,
+                isThreeNumbers: false
+            });
         }
-        
-        problems.push({
-            num1: num1,
-            num2: num2,
-            operator: operator,
-            answer: answer
-        });
     }
     
     displayProblems();
@@ -58,11 +101,17 @@ function displayProblems() {
     problems.forEach((problem, index) => {
         const div = document.createElement('div');
         div.className = 'problem';
+        
+        const calculation = problem.isThreeNumbers ? 
+            `${problem.num1} ${problem.operator1} ${problem.num2} ${problem.operator2} ${problem.num3}` :
+            `${problem.num1} ${problem.operator} ${problem.num2}`;
+            
         div.innerHTML = `
             <div class="problem-wrapper">
                 <div class="problem-number">${index + 1}</div>
                 <div class="calculation">
-                    ${problem.num1} ${problem.operator} ${problem.num2} = 
+                    <span class="calculation-expression">${calculation}</span>
+                    <span class="calculation-equals">=</span>
                     <input type="number" 
                            class="answer-input" 
                            data-index="${index}"
@@ -227,14 +276,21 @@ function displayResults(score, wrongProblems) {
             <div class="wrong-problems">
                 <h3>需要改进的题目：</h3>
                 <ul>
-                    ${wrongProblems.map(wrong => `
-                        <li>
-                            第${wrong.index}题：
-                            ${wrong.problem.num1} ${wrong.problem.operator} ${wrong.problem.num2} = ${wrong.problem.answer}
-                            <br>
-                            <span class="user-answer">你的答案：${wrong.userAnswer}</span>
-                        </li>
-                    `).join('')}
+                    ${wrongProblems.map(wrong => {
+                        const problem = wrong.problem;
+                        const calculation = problem.isThreeNumbers ? 
+                            `${problem.num1} ${problem.operator1} ${problem.num2} ${problem.operator2} ${problem.num3} = ${problem.answer}` :
+                            `${problem.num1} ${problem.operator} ${problem.num2} = ${problem.answer}`;
+                        
+                        return `
+                            <li>
+                                第${wrong.index}题：
+                                ${calculation}
+                                <br>
+                                <span class="user-answer">你的答案：${wrong.userAnswer}</span>
+                            </li>
+                        `;
+                    }).join('')}
                 </ul>
             </div>
         `;
