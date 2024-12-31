@@ -81,7 +81,12 @@ function checkAnswer(index, value) {
     const problem = problems[index];
     const inputElement = document.querySelector(`input[data-index="${index}"]`);
     
+    // 获取包含问题的父级div元素
+    const problemDiv = inputElement.closest('.problem');
+    
     if (parseInt(value) === problem.answer) {
+        // 添加正确答案的动画效果
+        problemDiv.classList.add('correct');
         // 移除动画类，以便下次可以重新触发
         setTimeout(() => {
             problemDiv.classList.remove('correct');
