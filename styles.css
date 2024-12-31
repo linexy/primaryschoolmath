@@ -46,6 +46,7 @@ body {
     font-size: 1.3em;
     background: linear-gradient(120deg, #FFD93D 0%, #FF6B6B 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -182,12 +183,16 @@ select:hover {
 }
 
 .answer-input[type="number"] {
+    -webkit-appearance: textfield;
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .answer-input[type="number"]:hover,
 .answer-input[type="number"]:focus {
+    -webkit-appearance: textfield;
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .answer-input:focus {
@@ -514,3 +519,4 @@ select:hover {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+
