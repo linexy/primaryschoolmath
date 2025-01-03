@@ -600,14 +600,25 @@ function createNumberPad(input) {
         e.stopPropagation();
     });
 }
+// 添加当前显示月份的变量
+let currentDate = new Date();
 
+// 修改月份切换函数
+function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    initCalendar();
+}
 
-// 添加日历相关函数
+// 修改日历初始化函数
 function initCalendar() {
     const calendar = document.getElementById('calendar');
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const calendarTitle = document.getElementById('calendar-title');
+    
+    // 更新标题
+    calendarTitle.textContent = `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月`;
+    
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     
     // 清空日历
     calendar.innerHTML = '';
@@ -640,16 +651,11 @@ function initCalendar() {
         const scoreDiv = document.createElement('div');
         scoreDiv.className = 'score';
         
-        const dateStr = `${today.getFullYear()}-${(today.getMonth()+1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
+        const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth()+1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
         const score = getScoreForDate(dateStr);
         if (score !== null) {
-            scoreDiv.textContent = score + '分';
+            scoreDiv.textContent = score === 100 ? '满分 🎉' : score + '分';
             dayElement.classList.add(getScoreClass(score));
-            
-            // 添加满分标识
-            if (score === 100) {
-                scoreDiv.textContent = '满分 🎉';
-            }
         }
         
         dayElement.appendChild(dateDiv);
@@ -657,6 +663,7 @@ function initCalendar() {
         calendar.appendChild(dayElement);
     }
 }
+
 // 获取指定日期的得分
 function getScoreForDate(dateStr) {
     const scores = JSON.parse(localStorage.getItem('mathScores') || '{}');
@@ -690,20 +697,11 @@ document.addEventListener('DOMContentLoaded', initCalendar);
 // 添加切换日历显示的函数
 function toggleCalendar() {
     const calendarPanel = document.querySelector('.calendar-panel');
-    const overlay = document.querySelector('.calendar-overlay');
-    
     if (calendarPanel.style.display === 'block') {
         calendarPanel.style.display = 'none';
-        overlay.style.display = 'none';
     } else {
         calendarPanel.style.display = 'block';
-        overlay.style.display = 'block';
-        initCalendar(); // 显示时更新日历数据
-        
-        // 添加点击遮罩层关闭日历的事件
-        overlay.onclick = () => {
-            calendarPanel.style.display = 'none';
-            overlay.style.display = 'none';
-        };
+        currentDate = new Date(); // 重置为当前月份
+        initCalendar();
     }
 }
