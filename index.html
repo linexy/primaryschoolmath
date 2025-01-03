@@ -28,6 +28,10 @@
                         <input type="checkbox" id="threeNumbers">
                         <span class="switch-label">三数运算</span>
                     </label>
+                    <label class="switch-wrapper">
+                        <input type="checkbox" id="leftBlank">
+                        <span class="switch-label">左边填空</span>
+                    </label>
                 </div>
                 <button class="primary-btn" onclick="generateProblems()">
                     <span class="icon">📝</span>生成新题目
@@ -35,12 +39,24 @@
                 <button class="primary-btn" onclick="window.print()">
                     <span class="icon">📄</span>打印题目
                 </button>
+                <button class="primary-btn" onclick="toggleCalendar()">
+                    <span class="icon">📅</span>训练记录
+                </button>
+            </div>
+
+            <div class="calendar-panel">
+                <div class="calendar-header">
+                    <button class="calendar-nav" onclick="changeMonth(-1)">◀</button>
+                    <h3 id="calendar-title">2024年3月</h3>
+                    <button class="calendar-nav" onclick="changeMonth(1)">▶</button>
+                </div>
+                <div id="calendar" class="calendar"></div>
             </div>
 
             <div id="problems" class="problems-container"></div>
 
             <div class="action-panel">
-                <button class="submit-btn" onclick="checkAnswers()" id="checkButton">
+                <button class="submit-btn" onclick="submitAnswers()" id="checkButton">
                     <span class="icon">✓</span>提交答案
                 </button>
             </div>
@@ -53,6 +69,7 @@
             <p class="copyright">Made by <a href="https://github.com/linexy/primaryschoolmath" target="_blank">linexy</a>, for 子言</p>
         </footer>
     </div>
+    <div class="calendar-overlay"></div>
     <script src="script.js"></script>
 </body>
 </html>
