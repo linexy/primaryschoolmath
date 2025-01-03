@@ -697,11 +697,19 @@ document.addEventListener('DOMContentLoaded', initCalendar);
 // 添加切换日历显示的函数
 function toggleCalendar() {
     const calendarPanel = document.querySelector('.calendar-panel');
+    const overlay = document.querySelector('.calendar-overlay');
     if (calendarPanel.style.display === 'block') {
         calendarPanel.style.display = 'none';
+        overlay.style.display = 'none';
     } else {
         calendarPanel.style.display = 'block';
+        overlay.style.display = 'block';
         currentDate = new Date(); // 重置为当前月份
         initCalendar();
+        // 添加点击遮罩层关闭日历的事件
+        overlay.onclick = () => {
+            calendarPanel.style.display = 'none';
+            overlay.style.display = 'none';
+        };
     }
 }
