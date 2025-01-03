@@ -502,11 +502,12 @@ document.head.appendChild(styleSheet);
 
 // 更新输入框的函数
 function updateInput(input, value) {
-    // 如果输入框为空，直接设置值
-    if (!input.value) {
+    // 如果是第一次点击已有数字的输入框，直接用新数字替换
+    if (input.dataset.firstClick === 'true') {
         input.value = value;
+        input.dataset.firstClick = 'false';
     } else {
-        // 如果已有值，追加新值
+        // 如果是继续输入，则追加数字
         const newValue = parseInt(input.value + value);
         input.value = newValue;
     }
@@ -520,6 +521,9 @@ function createNumberPad(input) {
     if (oldPad) {
         oldPad.remove();
     }
+
+    // 标记这是新一轮的第一次点击
+    input.dataset.firstClick = 'true';
 
     const pad = document.createElement('div');
     pad.className = 'number-pad';
@@ -686,10 +690,20 @@ document.addEventListener('DOMContentLoaded', initCalendar);
 // 添加切换日历显示的函数
 function toggleCalendar() {
     const calendarPanel = document.querySelector('.calendar-panel');
+    const overlay = document.querySelector('.calendar-overlay');
+    
     if (calendarPanel.style.display === 'block') {
         calendarPanel.style.display = 'none';
+        overlay.style.display = 'none';
     } else {
         calendarPanel.style.display = 'block';
+        overlay.style.display = 'block';
         initCalendar(); // 显示时更新日历数据
+        
+        // 添加点击遮罩层关闭日历的事件
+        overlay.onclick = () => {
+            calendarPanel.style.display = 'none';
+            overlay.style.display = 'none';
+        };
     }
 }
