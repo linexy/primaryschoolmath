@@ -10,6 +10,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
 
 body {
@@ -110,7 +112,7 @@ select:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 15px;
-    padding: 0px;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     margin: 0 auto;
     max-width: 1400px;
 }
