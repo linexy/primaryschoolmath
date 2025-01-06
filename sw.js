@@ -5,8 +5,9 @@ const CACHE_FILES = [
     '/index.html',
     '/styles.css',
     '/script.js',
+    '/favicon.png',
     '/icon-192.png',
-    '/icon-512.png'
+    'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap'
 ];
 
 self.addEventListener('install', event => {

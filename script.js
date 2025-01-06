@@ -2,6 +2,18 @@ let problems = [];
 let timerInterval;
 let startTime;
 
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker 注册成功');
+            })
+            .catch(err => {
+                console.log('ServiceWorker 注册失败: ', err);
+            });
+    });
+}
+
 function generateProblems() {
     const resultDiv = document.getElementById('result');
     if (resultDiv) {

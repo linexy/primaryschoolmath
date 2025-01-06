@@ -54,7 +54,7 @@ body {
 
 .controls-panel {
     background: white;
-    padding: 25px;
+    padding: 15px;
     border-radius: 20px;
     box-shadow: var(--box-shadow);
     border: 3px solid #e0e0e0;
@@ -86,7 +86,7 @@ select:hover {
 }
 
 .primary-btn, .submit-btn {
-    padding: 15px 10px;
+    padding: 5px 10px;
     border-radius: 12px;
     font-size: 1.1rem;
     font-weight: bold;
