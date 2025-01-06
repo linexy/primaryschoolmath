@@ -1,4 +1,6 @@
 let problems = [];
+let timerInterval;
+let startTime;
 
 function generateProblems() {
     const resultDiv = document.getElementById('result');
@@ -105,6 +107,7 @@ function generateProblems() {
     }
     
     displayProblems();
+    startTimer(); // 开始计时
 }
 
 function displayProblems() {
@@ -202,97 +205,33 @@ function checkAnswers() {
     }
 }
 
-// 添加烟花效果代码
-function createFireworks() {
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    let particles = [];
-    let animationStartTime = Date.now();
-    
-    class Particle {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-            this.radius = Math.random() * 3 + 2;
-            const angle = Math.random() * Math.PI * 2;
-            const velocity = Math.random() * 8 + 4;
-            this.dx = Math.cos(angle) * velocity;
-            this.dy = Math.sin(angle) * velocity;
-            this.alpha = 1;
-            // 使用更鲜艳的颜色
-            const colors = [
-                '#FF69B4', // 粉红
-                '#FFD700', // 金色
-                '#FF6B6B', // 红色
-                '#4ECDC4', // 青色
-                '#A7FF83', // 绿色
-                '#9B59B6'  // 紫色
-            ];
-            this.color = colors[Math.floor(Math.random() * colors.length)];
-        }
+// 添加庆祝动画函数
+function createCelebration() {
+    const emojis = ['🎉', '⭐', '🌟', '✨', '🎊', '🏆'];
+    const container = document.createElement('div');
+    container.className = 'celebration-container';
+    document.body.appendChild(container);
+
+    // 创建20个表情符号元素
+    for (let i = 0; i < 20; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'celebration-emoji';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
         
-        update() {
-            this.x += this.dx;
-            this.y += this.dy;
-            this.dy += 0.15; // 轻微重力效果
-            this.alpha -= 0.02;
-            return this.alpha > 0;
-        }
+        // 随机位置和动画延迟
+        emoji.style.left = Math.random() * 100 + 'vw';
+        emoji.style.animationDelay = Math.random() * 2 + 's';
         
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color + Math.floor(this.alpha * 255).toString(16).padStart(2, '0');
-            ctx.fill();
-        }
+        container.appendChild(emoji);
     }
-    
-    function createExplosion(x, y) {
-        for (let i = 0; i < 80; i++) {
-            particles.push(new Particle(x, y));
-        }
-    }
-    
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles = particles.filter(particle => {
-            particle.update();
-            particle.draw();
-            return particle.alpha > 0;
-        });
-        
-        // 检查动画是否应该继续
-        if (particles.length > 0 && Date.now() - animationStartTime < 2000) {
-            requestAnimationFrame(animate);
-        } else {
-            // 清除画布并移除
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            canvas.style.display = 'none';
-        }
-    }
-    
-    // 在不同位置发射多个烟花
-    function launchFireworks() {
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-                const x = Math.random() * (canvas.width * 0.8) + (canvas.width * 0.1);
-                const y = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.2);
-                createExplosion(x, y);
-            }, i * 500);
-        }
-    }
-    
-    canvas.style.display = 'block';
-    launchFireworks();
-    animate();
+
+    // 3秒后移除动画元素
+    setTimeout(() => {
+        container.remove();
+    }, 5000);
 }
 
-// 修改 displayResults 函数，添加得分保存
+// 修改 displayResults 函数
 function displayResults(score, wrongProblems) {
     const resultDiv = document.getElementById('result');
     
@@ -311,13 +250,18 @@ function displayResults(score, wrongProblems) {
     
     // 显示分数和错题解析按钮
     resultDiv.innerHTML = `
-        <h3>本次得分：${score}分</h3>
+        <h3 class="${score === 100 ? 'perfect-score' : ''}">本次得分：${score}分</h3>
         ${wrongProblems.length > 0 ? `
             <button class="primary-btn" onclick="showWrongAnalysis(${JSON.stringify(wrongProblems).replace(/"/g, '&quot;')})">
                 <span class="icon">📝</span>错题解析
             </button>
         ` : ''}
     `;
+
+    // 如果是满分，触发庆祝动画
+    if (score === 100) {
+        createCelebration();
+    }
     
     // 3秒后移除闪烁效果
     setTimeout(() => {
@@ -393,6 +337,7 @@ function submitAnswers() {
 
     let score = 0;
     const wrongProblems = [];
+    const timeSpent = stopTimer(); // 停止计时并获取用时
 
     problems.forEach((problem, index) => {
         const userAnswer = parseInt(document.querySelector(`input[data-index="${index}"]`).value);
@@ -410,6 +355,10 @@ function submitAnswers() {
     lastWrongProblems = wrongProblems; // 保存错题信息
     displayResults(score, wrongProblems);
     saveScore(score);
+
+    // 可以将用时添加到结果显示中
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML += `<p>完成用时：${timeSpent}</p>`;
 }
 
 function checkAllAnswered() {
@@ -712,4 +661,26 @@ function toggleCalendar() {
             overlay.style.display = 'none';
         };
     }
+}
+
+function startTimer() {
+    // 重置并开始计时
+    clearInterval(timerInterval);
+    startTime = new Date();
+    
+    timerInterval = setInterval(() => {
+        const currentTime = new Date();
+        const timeDiff = Math.floor((currentTime - startTime) / 1000); // 转换为秒
+        
+        const minutes = Math.floor(timeDiff / 60);
+        const seconds = timeDiff % 60;
+        
+        document.getElementById('timer').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    return document.getElementById('timer').textContent;
 }

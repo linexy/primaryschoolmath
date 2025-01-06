@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <canvas id="fireworks"></canvas>
     <div class="app-container">
         <header class="header">
             <h1>小学数学练习</h1>
@@ -40,8 +39,12 @@
                     <span class="icon">📄</span>打印题目
                 </button>
                 <button class="primary-btn" onclick="toggleCalendar()">
-                    <span class="icon">📅</span>训练记录
+                    <span class="icon">📅</span>练习记录
                 </button>
+                <div class="timer-display">
+                    <span class="icon">⏱️</span>
+                    <span id="timer">00:00</span>
+                </div>
             </div>
 
             <div class="calendar-panel">
