@@ -2,16 +2,28 @@ let problems = [];
 let timerInterval;
 let startTime;
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('ServiceWorker 注册成功');
-            })
-            .catch(err => {
-                console.log('ServiceWorker 注册失败: ', err);
-            });
-    });
+function generateNumber(max) {
+    return Math.floor(Math.random() * max) + 1;
+}
+
+function generateProblem(max) {
+    const isThreeNumbers = document.getElementById('threeNumbers').checked;
+    const num1 = generateNumber(max);
+    const num2 = generateNumber(max);
+    const num3 = isThreeNumbers ? generateNumber(max) : null;
+    
+    // 确保加法不超过最大值
+    if (isThreeNumbers) {
+        if (num1 + num2 + num3 > max) {
+            return generateProblem(max); // 重新生成
+        }
+    } else {
+        if (num1 + num2 > max) {
+            return generateProblem(max); // 重新生成
+        }
+    }
+    
+    // ... 其余代码保持不变 ...
 }
 
 function generateProblems() {
@@ -20,87 +32,26 @@ function generateProblems() {
         resultDiv.innerHTML = '';
     }
     
-    const difficulty = parseInt(document.getElementById('difficulty').value);
+    const difficulty = document.getElementById('difficulty').value;
     const useThreeNumbers = document.getElementById('threeNumbers').checked;
     const useLeftBlank = document.getElementById('leftBlank').checked;
-    const range = difficulty;
+    const isMultiply = difficulty === 'multiply';
+    const range = isMultiply ? 10 : parseInt(difficulty);
     problems = [];
     
     for (let i = 0; i < 20; i++) {
-        // 即使勾选了左边填空，也随机决定是否使用左边填空
-        const isLeftBlank = useLeftBlank ? Math.random() < 0.5 : false;
-        
-        if (useThreeNumbers && Math.random() < 0.5) {
-            // 三数运算题
-            let num1, num2, num3, operator1, operator2, answer, intermediateResult, finalResult;
+        if (isMultiply) {
+            // 生成乘法题
+            let num1, num2, answer, finalResult;
             
-            do {
-                num1 = Math.floor(Math.random() * range) + 1;
-                num2 = Math.floor(Math.random() * range) + 1;
-                num3 = Math.floor(Math.random() * range) + 1;
-                operator1 = Math.random() < 0.5 ? '+' : '-';
-                operator2 = Math.random() < 0.5 ? '+' : '-';
-                
-                if (operator1 === '+') {
-                    intermediateResult = num1 + num2;
-                    finalResult = operator2 === '+' ? intermediateResult + num3 : intermediateResult - num3;
-                } else {
-                    intermediateResult = num1 - num2;
-                    finalResult = operator2 === '+' ? intermediateResult + num3 : intermediateResult - num3;
-                }
-                
-            } while (
-                intermediateResult > range || 
-                intermediateResult <= 0 || 
-                finalResult > range || 
-                finalResult <= 0
-            );
-            
-            // 如果允许左边填空，则在1-3之间随机选择位置，否则只能是最后的结果
-            const blankPosition = isLeftBlank ? Math.floor(Math.random() * 3) + 1 : 0;
-            
-            if (isLeftBlank) {
-                if (blankPosition === 1) answer = num1;
-                else if (blankPosition === 2) answer = num2;
-                else if (blankPosition === 3) answer = num3;
-            } else {
-                answer = finalResult;
-            }
-            
-            problems.push({
-                num1: num1,
-                num2: num2,
-                num3: num3,
-                operator1: operator1,
-                operator2: operator2,
-                answer: answer,
-                isThreeNumbers: true,
-                blankPosition: blankPosition,
-                finalResult: finalResult
-            });
-        } else {
-            // 两数运算题
-            let num1, num2, operator, answer, finalResult;
-            
-            do {
-                num1 = Math.floor(Math.random() * range) + 1;
-                num2 = Math.floor(Math.random() * range) + 1;
-                operator = Math.random() < 0.5 ? '+' : '-';
-                
-                if (operator === '+') {
-                    finalResult = num1 + num2;
-                } else {
-                    if (num1 < num2) {
-                        [num1, num2] = [num2, num1];
-                    }
-                    finalResult = num1 - num2;
-                }
-            } while (finalResult > range || finalResult <= 0);
+            num1 = Math.floor(Math.random() * 9) + 1; // 1-9
+            num2 = Math.floor(Math.random() * 9) + 1; // 1-9
+            finalResult = num1 * num2;
             
             // 如果允许左边填空，则随机选择位置1或2，否则只能是结果
-            const blankPosition = isLeftBlank ? Math.floor(Math.random() * 2) + 1 : 0;
+            const blankPosition = useLeftBlank ? Math.floor(Math.random() * 2) + 1 : 0;
             
-            if (isLeftBlank) {
+            if (useLeftBlank) {
                 answer = blankPosition === 1 ? num1 : num2;
             } else {
                 answer = finalResult;
@@ -109,17 +60,107 @@ function generateProblems() {
             problems.push({
                 num1: num1,
                 num2: num2,
-                operator: operator,
+                operator: '×',
                 answer: answer,
                 isThreeNumbers: false,
                 blankPosition: blankPosition,
                 finalResult: finalResult
             });
+        } else {
+            // 即使勾选了左边填空，也随机决定是否使用左边填空
+            const isLeftBlank = useLeftBlank ? Math.random() < 0.5 : false;
+            
+            if (useThreeNumbers && Math.random() < 0.5) {
+                // 三数运算题
+                let num1, num2, num3, operator1, operator2, answer, intermediateResult, finalResult;
+                
+                do {
+                    num1 = Math.floor(Math.random() * range) + 1;
+                    num2 = Math.floor(Math.random() * range) + 1;
+                    num3 = Math.floor(Math.random() * range) + 1;
+                    operator1 = Math.random() < 0.5 ? '+' : '-';
+                    operator2 = Math.random() < 0.5 ? '+' : '-';
+                    
+                    if (operator1 === '+') {
+                        intermediateResult = num1 + num2;
+                        finalResult = operator2 === '+' ? intermediateResult + num3 : intermediateResult - num3;
+                    } else {
+                        intermediateResult = num1 - num2;
+                        finalResult = operator2 === '+' ? intermediateResult + num3 : intermediateResult - num3;
+                    }
+                    
+                } while (
+                    intermediateResult > range || 
+                    intermediateResult <= 0 || 
+                    finalResult > range || 
+                    finalResult <= 0
+                );
+                
+                // 如果允许左边填空，则在1-3之间随机选择位置，否则只能是最后的结果
+                const blankPosition = isLeftBlank ? Math.floor(Math.random() * 3) + 1 : 0;
+                
+                if (isLeftBlank) {
+                    if (blankPosition === 1) answer = num1;
+                    else if (blankPosition === 2) answer = num2;
+                    else if (blankPosition === 3) answer = num3;
+                } else {
+                    answer = finalResult;
+                }
+                
+                problems.push({
+                    num1: num1,
+                    num2: num2,
+                    num3: num3,
+                    operator1: operator1,
+                    operator2: operator2,
+                    answer: answer,
+                    isThreeNumbers: true,
+                    blankPosition: blankPosition,
+                    finalResult: finalResult
+                });
+            } else {
+                // 两数运算题
+                let num1, num2, operator, answer, finalResult;
+                
+                do {
+                    num1 = Math.floor(Math.random() * range) + 1;
+                    num2 = Math.floor(Math.random() * range) + 1;
+                    operator = Math.random() < 0.5 ? '+' : '-';
+                    
+                    if (operator === '+') {
+                        finalResult = num1 + num2;
+                    } else {
+                        if (num1 < num2) {
+                            [num1, num2] = [num2, num1];
+                        }
+                        finalResult = num1 - num2;
+                    }
+                } while (finalResult > range || finalResult <= 0);
+                
+                // 如果允许左边填空，则随机选择位置1或2，否则只能是结果
+                const blankPosition = isLeftBlank ? Math.floor(Math.random() * 2) + 1 : 0;
+                
+                if (isLeftBlank) {
+                    answer = blankPosition === 1 ? num1 : num2;
+                } else {
+                    answer = finalResult;
+                }
+                
+                problems.push({
+                    num1: num1,
+                    num2: num2,
+                    operator: operator,
+                    answer: answer,
+                    isThreeNumbers: false,
+                    blankPosition: blankPosition,
+                    finalResult: finalResult
+                });
+            }
         }
     }
     
     displayProblems();
-    startTimer(); // 开始计时
+    startTimer();
 }
 
 function displayProblems() {
@@ -132,7 +173,16 @@ function displayProblems() {
         div.className = 'problem';
         
         let calculationHtml;
-        if (problem.isThreeNumbers) {
+        if (problem.operator === '×') {
+            // 乘法题显示
+            if (problem.blankPosition === 1) {
+                calculationHtml = `<input type="number" class="answer-input" data-index="${index}" readonly onclick="createNumberPad(this)"> × ${problem.num2} = ${problem.finalResult}`;
+            } else if (problem.blankPosition === 2) {
+                calculationHtml = `${problem.num1} × <input type="number" class="answer-input" data-index="${index}" readonly onclick="createNumberPad(this)"> = ${problem.finalResult}`;
+            } else {
+                calculationHtml = `${problem.num1} × ${problem.num2} = <input type="number" class="answer-input" data-index="${index}" readonly onclick="createNumberPad(this)">`;
+            }
+        } else if (problem.isThreeNumbers) {
             // 三数运算题显示
             const result = problem.operator1 === '+' ? 
                 (problem.operator2 === '+' ? problem.num1 + problem.num2 + problem.num3 : problem.num1 + problem.num2 - problem.num3) :
